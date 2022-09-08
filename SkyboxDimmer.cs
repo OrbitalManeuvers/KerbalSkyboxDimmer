@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using UnityEngine;
 
 // All primary logic borrowed from DOE.
@@ -13,7 +14,7 @@ namespace KerbalSkyboxDimmer
         private float saveFadeLimit = 0.0f;
         private bool galaxySaved = false;
 
-        private float maxBrightness = 1.0f;
+        private float maxBrightness = 0.8f;
 
         private void restoreGalaxy()
         {
@@ -38,6 +39,22 @@ namespace KerbalSkyboxDimmer
         private void Start()
         {
             galaxySaved = false;
+
+            ConfigNode root = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/KSD/KerbalSkyboxDimmer.settings");
+            if (root != null)
+            {
+                ConfigNode optionNode = root.GetNode("OPTIONS");
+                if (optionNode != null)
+                {
+                    float value = float.Parse(optionNode.GetValue("maxBrightness"));
+                    if (value >= 0 && value <= 1.0)
+                    {
+                        maxBrightness = value;
+                        Debug.Log("[KSD] Setting maxBrightness to " + value.ToString());
+                    }
+                }
+            }
+
             if (GalaxyCubeControl.Instance != null)
             {
                 saveGalaxy();
